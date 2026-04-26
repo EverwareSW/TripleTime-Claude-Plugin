@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "tripletime": {
+      "type": "http",
+      "url": "${TRIPLETIME_MCP_URL:-https://doubletime-api.test/mcp}",
+      "headers": {
+        "Authorization": "Bearer ${TRIPLETIME_TOKEN}"
+      }
+    }
+  }
+}
