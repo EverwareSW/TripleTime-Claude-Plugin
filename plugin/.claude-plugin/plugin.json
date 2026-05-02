@@ -1,9 +1,0 @@
-{
-  "name": "tripletime",
-  "version": "0.1.0",
-  "description": "Control TripleTime time tracking from Claude Code via MCP and slash commands.",
-  "author": {
-    "name": "Ken van der Eerden"
-  },
-  "homepage": "https://github.com/EverwareSW/tripletime-claude-plugin"
-}
