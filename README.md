@@ -5,8 +5,7 @@ Control [TripleTime](https://tripletime.app) time tracking from Claude Code via 
 ## What you get
 
 - `/tripletime <subcommand>` (with `/tt` and `/trt` aliases): list days, create, update or delete logs, create and update groups.
-- An MCP server entry pointing at the TripleTime API. The AI calls semantic tools (`who-am-i`, `list_days`, `upsert-log-group`, `delete-log-group`, `upsert-log`, `delete-log`, `open-in-browser`) 
-- and has autonomy over descriptions and times.
+- An MCP server entry pointing at the TripleTime API. The AI calls semantic tools (`who-am-i`, `list-days`, `upsert-log-group`, `delete-log-group`, `upsert-log`, `delete-log`, `open-in-browser`) and has autonomy over descriptions and times.
 
 Examples:
 
@@ -14,7 +13,8 @@ Examples:
 /tt start                     # AI infers description from your session
 /tt start "Fixing login bug"  # explicit description
 /tt end 17:30                 # end current log at 17:30
-/tt new-group "Standup"       # new group today
+/tt track "Reviewing PR #42"  # track task, AI adds end log when done
+/tt create-group "Standup"    # new group today
 /tt list                      # summarize this week
 ```
 
@@ -36,13 +36,12 @@ The MCP server authenticates with a Sanctum bearer token issued by the TripleTim
    /tripletime login your@email
    ```
 2. Type your password when prompted. Claude reads your machine device name and uses `Claude Code (<device name>)` as the device_name on the token, so you can later identify and revoke it from the web UI.
-3. Claude prints two lines for you to add to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
+3. Claude prints the line to add to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
    ```sh
    export TRIPLETIME_TOKEN="..."
-   export TRIPLETIME_MCP_URL="https://api.tripletime.app/mcp"
    ```
 4. Restart Claude Code so the MCP server picks up the env var.
-5. Run `/mcp` — `tripletime` should be listed as connected with 8 tools.
+5. Run `/mcp` — `tripletime` should be listed as connected.
 
 ## Subcommands
 
