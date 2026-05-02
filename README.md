@@ -4,15 +4,16 @@ Control [TripleTime](https://tripletime.app) time tracking from Claude Code via 
 
 ## What you get
 
-- `/tripletime <subcommand>` (with `/tt` and `/trt` aliases): start logs, end logs, create groups, list days, update or delete logs.
-- An MCP server entry pointing at the TripleTime API. The AI calls semantic tools (`start_log`, `end_log`, `list_days`, …) and has autonomy over descriptions and times.
+- `/tripletime <subcommand>` (with `/tt` and `/trt` aliases): list days, create, update or delete logs, create and update groups.
+- An MCP server entry pointing at the TripleTime API. The AI calls semantic tools (`who-am-i`, `list_days`, `upsert-log-group`, `delete-log-group`, `upsert-log`, `delete-log`, `open-in-browser`) 
+- and has autonomy over descriptions and times.
 
 Examples:
 
 ```
 /tt start                     # AI infers description from your session
 /tt start "Fixing login bug"  # explicit description
-/tt end 17:30                 # break log at 17:30
+/tt end 17:30                 # end current log at 17:30
 /tt new-group "Standup"       # new group today
 /tt list                      # summarize this week
 ```
@@ -26,8 +27,6 @@ Add this repo as a Claude Code plugin marketplace:
 /plugin install tripletime
 ```
 
-(Replace `EverwareSW` with whatever GitHub org/user owns the published repo.)
-
 ## One-time setup
 
 The MCP server authenticates with a Sanctum bearer token issued by the TripleTime `/login` endpoint.
@@ -36,29 +35,33 @@ The MCP server authenticates with a Sanctum bearer token issued by the TripleTim
    ```
    /tripletime login your@email
    ```
-2. Type your password when prompted. Claude reads your machine `hostname` and uses `<hostname> claude-code` as the device name on the token, so you can later identify and revoke it from the web UI.
+2. Type your password when prompted. Claude reads your machine device name and uses `Claude Code (<device name>)` as the device_name on the token, so you can later identify and revoke it from the web UI.
 3. Claude prints two lines for you to add to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
    ```sh
    export TRIPLETIME_TOKEN="..."
-   export TRIPLETIME_MCP_URL="https://doubletime-api.test/mcp"
+   export TRIPLETIME_MCP_URL="https://api.tripletime.app/mcp"
    ```
-   Use the prod URL instead of `doubletime-api.test` if you're not on the local Herd dev environment.
 4. Restart Claude Code so the MCP server picks up the env var.
 5. Run `/mcp` — `tripletime` should be listed as connected with 8 tools.
 
 ## Subcommands
 
-| Command | Action |
-|---|---|
-| `/tripletime login [email]` | Mint a Sanctum bearer via `POST /login`. Prints env-var lines. |
-| `/tripletime start [description]` | Start a new log. AI synthesizes description if absent. |
-| `/tripletime end [HH:MM]` | Append a break log to today's last group. |
-| `/tripletime new-group <name> [YYYY-MM-DD]` | Create a new log group. |
-| `/tripletime rename-group <id> <name>` | Rename a log group. |
-| `/tripletime list [from] [until]` | Summarize log groups + logs in a date range. |
-| `/tripletime update <log_id> [field=value]` | Mutate description/start/marks of a log. |
-| `/tripletime delete <log_id>` | Delete a log. |
-| `/tripletime logout` | Remove `TRIPLETIME_TOKEN` and restart Claude Code. |
+| Command                                             | Action                                                                                     |
+|-----------------------------------------------------|--------------------------------------------------------------------------------------------|
+| `/tripletime login [email]`                         | Mint a Sanctum bearer via `POST /login`. Prints env-var lines.                             |
+| `/tripletime logout`                                | Remove `TRIPLETIME_TOKEN` and restart Claude Code.                                         |
+| `/tripletime whoami`                                | Get current user information.                                                              |
+| `/tripletime list [from] [until]`                   | Summarize log groups + logs in a date range.                                               |
+| `/tripletime create-group [name] [YYYY-MM-DD]`      | Create a log group.                                                                        |
+| `/tripletime update-group <id> [name] [YYYY-MM-DD]` | Update a log group.                                                                        |
+| `/tripletime delete-group <id>`                     | Delete a log group and all its logs.                                                       |
+| `/tripletime start [description]`                   | Start a new log. AI synthesizes description if absent.                                     |
+| `/tripletime end [HH:MM]`                           | Add a log to the current log group, without a description, with the given or current time. |
+| `/tripletime track [description]`                   | Track current session by creating a log and adding end log when work is done.              |
+| `/tripletime create-log [field=value]`              | Create a log.                                                                              |
+| `/tripletime update-log <id> [field=value]`         | Update a log.                                                                              |
+| `/tripletime delete-log <id>`                       | Delete a log.                                                                              |
+| `/tripletime open [from] [until]`                   | Open TripleTime in the browser.                                                            |
 
 `/tt` and `/trt` are aliases.
 
@@ -67,7 +70,7 @@ The MCP server authenticates with a Sanctum bearer token issued by the TripleTim
 A TripleTime Log has no `end_time`. The next log's `start` *is* the previous log's end. So:
 
 - To switch tasks: use `start` — it implicitly ends the previous log.
-- To stop tracking (break, end of day): use `end` — it appends an empty-description "break" log.
+- To stop tracking (break, end of day): use `end` — it appends an empty-description log.
 
 ## Caveats
 
