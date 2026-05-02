@@ -7,10 +7,7 @@
   "plugins": [
     {
       "name": "tripletime",
-      "source": {
-        "source": "github",
-        "repo": "EverwareSW/TripleTime-Claude-Plugin"
-      },
+      "source": "./plugin",
       "description": "Control TripleTime time tracking from Claude Code.",
       "version": "0.1.0",
       "category": "productivity",
