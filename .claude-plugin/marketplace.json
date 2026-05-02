@@ -7,9 +7,8 @@
   "plugins": [
     {
       "name": "tripletime",
-      "source": "./plugin",
+      "source": "./",
       "description": "Control TripleTime time tracking from Claude Code.",
-      "version": "0.1.0",
       "category": "productivity",
       "tags": ["time-tracking", "mcp", "tripletime"]
     }
