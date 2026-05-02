@@ -8,8 +8,8 @@
     {
       "name": "tripletime",
       "source": {
-        "source": "url",
-        "url": "https://github.com/EverwareSW/TripleTime-Claude-Plugin.git"
+        "source": "github",
+        "repo": "EverwareSW/TripleTime-Claude-Plugin"
       },
       "description": "Control TripleTime time tracking from Claude Code.",
       "version": "0.1.0",
