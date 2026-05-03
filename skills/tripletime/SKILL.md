@@ -1,8 +1,9 @@
 ---
+name: 'tripletime'
 description: Control TripleTime time tracking. Subcommands - login, logout, whoami, list, create-group, update-group, delete-group, start, end, track, create-log, update-log, delete-log, open
 argument-hint: <subcommand> [args...]
 disable-model-invocation: true
-allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *)
+allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *) mcp__plugin_tripletime_tripletime__*
 ---
 
 You are operating the user's TripleTime time tracker. The MCP server `tripletime` exposes tools that map to each subcommand below. The user's input is `$ARGUMENTS` — parse the first whitespace-delimited token as the subcommand.
@@ -14,7 +15,7 @@ Mint a Sanctum bearer token. Steps:
 1. Get the machine name: run `scutil --get ComputerName` on macOS, or `hostname` as fallback. Trim the result.
 2. Build `device_name = "Claude Code (<machine name>)"` (e.g. `Claude Code (Ken's Laptop)`).
 3. Ask the user for their TripleTime password (do not echo it back).
-4. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_API_URL` if the user has it set in their shell.
+4. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL` if the user has it set in their shell.
 5. POST to `<base>/api/auth/login` as JSON. Use Bash `curl -sS -X POST <base>/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"email":"...","password":"...","device_name":"..."}'`.
 6. Parse the `token` field from the JSON response.
 7. Print to the user:
@@ -23,20 +24,22 @@ Mint a Sanctum bearer token. Steps:
      ```
      export TRIPLETIME_TOKEN="<the token>"
      ```
+   - Tell them to source their profile (e.g. `source ~/.zshrc`) so the env var is available.
    - Tell them to restart Claude Code so the MCP server picks up the env var.
 8. Do **not** save the token to any file — only print it for the user to handle.
 9. If the response is a 2FA challenge instead of a token, tell the user 2FA-protected accounts are not supported in this version and they should mint a token via the web UI.
 
-### `logout`
-1. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_API_URL`.
-2. Call `curl -sS -X POST <base>/api/auth/logout -H 'Accept: application/json' -H 'Authorization: Bearer $TRIPLETIME_TOKEN'` to revoke the token server-side.
-3. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile and restart Claude Code.
-
 ### `whoami`
 Call MCP tool `who-am-i-tool`. Print the user's name, email, ignored_log_descriptions and any relevant metadata returned.
 
+### `logout`
+1. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL`.
+2. Call `curl -sS -X POST <base>/api/auth/logout -H 'Accept: application/json' -H 'Authorization: Bearer $TRIPLETIME_TOKEN'` to revoke the token server-side.
+3. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile and restart Claude Code.
+
 ### `list [from] [until]`
-Call MCP tool `list-days-tool` with optional `from` and `until` (YYYY-MM-DD). Summarize the result — totals per day, highlights of long blocks, anything that stands out.
+Call MCP tool `list-days-tool` with optional `from` and `until` (YYYY-MM-DD), don't fill if not explicitly passed, defaults to this week. 
+Summarize the result — totals per day, highlights of long blocks, anything that stands out.
 
 ### `create-group [name] [date]`
 Call MCP tool `upsert-log-group-tool` **without** an `id` (creates a new group). `name` is optional. `date` is YYYY-MM-DD; defaults to today.

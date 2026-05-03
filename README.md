@@ -4,18 +4,18 @@ Control [TripleTime](https://tripletime.app) time tracking from Claude Code via 
 
 ## What you get
 
-- `/tripletime <subcommand>` (with `/tt` and `/trt` aliases): list days, create, update or delete logs, create and update groups.
+- `/tripletime <subcommand>`: list days, create, update or delete logs, create and update groups.
 - An MCP server entry pointing at the TripleTime API. The AI calls semantic tools (`who-am-i`, `list-days`, `upsert-log-group`, `delete-log-group`, `upsert-log`, `delete-log`, `open-in-browser`) and has autonomy over descriptions and times.
 
 Examples:
 
 ```
-/tt start                     # AI infers description from your session
-/tt start "Fixing login bug"  # explicit description
-/tt end 17:30                 # end current log at 17:30
-/tt track "Reviewing PR #42"  # track task, AI adds end log when done
-/tt create-group "Standup"    # new group today
-/tt list                      # summarize this week
+/tripletime start                     # AI infers description from your session
+/tripletime start "Fixing login bug"  # explicit description
+/tripletime end 17:30                 # end current log at 17:30
+/tripletime track "Reviewing PR #42"  # track task, AI adds end log when done
+/tripletime create-group "Standup"    # new group today
+/tripletime list                      # summarize this week
 ```
 
 ## Install
@@ -61,8 +61,6 @@ The MCP server authenticates with a Sanctum bearer token issued by the TripleTim
 | `/tripletime update-log <id> [field=value]`         | Update a log.                                                                              |
 | `/tripletime delete-log <id>`                       | Delete a log.                                                                              |
 | `/tripletime open [from] [until]`                   | Open TripleTime in the browser.                                                            |
-
-`/tt` and `/trt` are aliases.
 
 ## Stop / end semantics
 
