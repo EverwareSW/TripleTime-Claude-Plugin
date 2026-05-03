@@ -1,6 +1,8 @@
 ---
 description: Control TripleTime time tracking. Subcommands - login, logout, whoami, list, create-group, update-group, delete-group, start, end, track, create-log, update-log, delete-log, open
 argument-hint: <subcommand> [args...]
+disable-model-invocation: true
+allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *)
 ---
 
 You are operating the user's TripleTime time tracker. The MCP server `tripletime` exposes tools that map to each subcommand below. The user's input is `$ARGUMENTS` — parse the first whitespace-delimited token as the subcommand.
@@ -10,7 +12,7 @@ You are operating the user's TripleTime time tracker. The MCP server `tripletime
 ### `login [email]`
 Mint a Sanctum bearer token. Steps:
 1. Get the machine name: run `scutil --get ComputerName` on macOS, or `hostname` as fallback. Trim the result.
-2. Build `device_name = "Claude Code (<machine name>)"` (e.g. `Claude Code (Ken’s Laptop)`).
+2. Build `device_name = "Claude Code (<machine name>)"` (e.g. `Claude Code (Ken's Laptop)`).
 3. Ask the user for their TripleTime password (do not echo it back).
 4. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_API_URL` if the user has it set in their shell.
 5. POST to `<base>/api/auth/login` as JSON. Use Bash `curl -sS -X POST <base>/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"email":"...","password":"...","device_name":"..."}'`.
