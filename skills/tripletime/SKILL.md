@@ -3,7 +3,7 @@ name: 'tripletime'
 description: Control TripleTime time tracking. Subcommands - login, logout, whoami, list, create-group, update-group, delete-group, start, end, track, create-log, update-log, delete-log, open
 argument-hint: <subcommand> [args...]
 disable-model-invocation: true
-allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *) mcp__plugin_tripletime_tripletime__*
+allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *) Bash(date *) mcp__plugin_tripletime_tripletime__*
 ---
 
 You are operating the user's TripleTime time tracker. The MCP server `tripletime` exposes tools that map to each subcommand below. The user's input is `$ARGUMENTS` — parse the first whitespace-delimited token as the subcommand.
@@ -66,11 +66,22 @@ Add an empty log (no description) to close the active log. Steps:
 
 ### `track [description]`
 Track the current task continuously — creating a start log now and maintaining an end log as work progresses.
-1. Call `list-days-tool` to identify a suitable group and make sure there are no existing logs whos times could conflict (create a group if needed).
-2. Create a log via `upsert-log-tool` with `start` = when the task began (infer from session context if possible) and the given or synthesized description.
-3. When all tasks are done, add (or update) an empty end log via `upsert-log-tool` with `start` = finish time.
-4. If the task is resumed **within 5 minutes**, consider it still active — update the end log's `start` time when it finishes again.
-5. If the task is resumed **after 5+ minutes**, treat the gap as a break: insert an empty log first (no description, no start time), then a new log for the resumed work with `start` = resume time. Return to 3.
+
+**This is a persistent loop.** Once started, steps 3–4 apply to every subsequent response for the rest of the session, unless track is ended. 
+The task stays active until the user explicitly stops tracking.
+
+1. Call `list-days-tool` to identify a suitable group and make sure there are no existing logs whos times could conflict (create a group if needed). Remember the group ID — you will need it every response. The end log ID is not yet known; it is captured after step 4.
+2. Create a work log via `upsert-log-tool` with `start` = when the task began (infer from session context if possible) and the given or synthesized description. Then go to step 4 (no end log exists yet, skip step 3 this first time).
+3. As your **first tool call** of every response (from the second response onwards), run `date +%H:%M` and check the gap since the end log's current `start`. If the end log ID is unknown (e.g. after session compaction), call `list-days-tool` first to re-identify it (last log with no description in the tracked group).
+   - **Gap ≤ 5 min:** do nothing yet, print nothing. Go to step 4.
+   - **Gap > 5 min:** leave the existing end log as-is, create a new work log with `start` = now (rounded to nearest 5 min) at index = end log's index + 2 — leaving end log's index + 1 empty, which acts as the implicit break slot. Step 4 must now create a new end log, leaving the old end log. Go to step 4.
+4. As your **last tool call(s)** of every response, run `date +%H:%M` and create or update the "end log" with `start` = now (rounded to nearest 5 min). Remember its ID. Never guess the time. → Go to step 3 on the next response.
+
+### `end-track`
+Stop the active tracking loop. Steps:
+1. Run `date +%H:%M` and add a final end log with `start` = now (rounded to nearest 5 min).
+2. Stop the loop — do **not** apply steps 3–4 on future responses.
+3. Confirm to the user that tracking has stopped and print the final end time.
 
 ### `create-log [field=value ...]`
 Call MCP tool `upsert-log-tool` **without** an `id`. Accepted fields: `log_group_id` (required), `description`, `start` (HH:MM), `index`.
