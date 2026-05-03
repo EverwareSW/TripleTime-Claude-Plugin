@@ -48,7 +48,7 @@ Call MCP tool `upsert-log-group-tool` **without** an `id` (creates a new group).
 Call MCP tool `upsert-log-group-tool` **with** the `id`. Pass any provided `name` or `date`.
 
 ### `delete-group <id>`
-Call MCP tool `delete-log-group-tool`. Confirm with the user before deleting unless they said "force" or "yes".
+Call MCP tool `delete-log-group-tool`. Also deletes all logs within the group! Confirm with the user before deleting unless they said "force" or "yes".
 
 ### `start [description]`
 Create a new log in the active group. Steps:
