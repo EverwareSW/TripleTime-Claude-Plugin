@@ -18,7 +18,7 @@ Steps:
 2. Build `device_name = "Claude Code (<machine name>)"` (e.g. `Claude Code (Ken's Laptop)`).
 3. Ask the user for their TripleTime password (do not echo it back).
 4. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL` if the user has it set in their shell.
-5. POST to `<base>/api/auth/login` as JSON. Use Bash `curl -sS -X POST <base>/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"email":"...","password":"...","device_name":"..."} -H "User-Agent: Claude-Code"'`.
+5. POST to `<base>/api/auth/login` as JSON. Use Bash `curl -sS -X POST <base>/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -H "User-Agent: Claude-Code" -d '{"email":"...","password":"...","device_name":"..."}'`.
 6. Parse the `token` field from the JSON response and save it:
    - `mkdir -p "${CLAUDE_PLUGIN_DATA}"`.
    - Read existing `${CLAUDE_PLUGIN_DATA}/.env` if present; update/add `TRIPLETIME_TOKEN=...`, preserve other keys. Write back, no quotes around the value. Do **not** save the token anywhere else!
@@ -37,8 +37,10 @@ Steps:
 
 ### `logout`
 1. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL`.
-2. Call `curl -sS -X POST <base>/api/auth/logout -H 'Accept: application/json' -H 'Authorization: Bearer $TRIPLETIME_TOKEN'` to revoke the token server-side.
-3. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile and restart Claude Code.
+2. Call `curl -sS -X POST <base>/api/auth/logout -H "Authorization: Bearer $TRIPLETIME_TOKEN" -H 'Accept: application/json' -H "User-Agent: Claude-Code"` to revoke the token server-side.
+3. Remove the `TRIPLETIME_TOKEN` from the `{CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env) file.
+4. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile if they set the token manually.
+5. Tell the user to restart Claude Code.
 
 ### `whoami`
 Call MCP tool `who-am-i-tool`. Print the user's name, email, ignored_log_descriptions and any relevant metadata returned.

@@ -20,16 +20,7 @@ Examples:
 
 ## Install
 
-Add this repo as a Claude Code plugin marketplace:
-
-```
-/plugin marketplace add EverwareSW/tripletime-claude-plugin
-/plugin install tripletime
-```
-
-## One-time setup
-
-The MCP server authenticates with a Sanctum bearer token issued by the TripleTime `/login` endpoint.
+Follow these steps to install:
 
 1. Open Claude Code anywhere and run:
    ```
