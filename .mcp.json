@@ -3,9 +3,7 @@
     "tripletime": {
       "type": "http",
       "url": "${TRIPLETIME_URL:-https://api.tripletime.app}/mcp",
-      "headers": {
-        "Authorization": "Bearer ${TRIPLETIME_TOKEN}"
-      }
+      "headersHelper": "[ -z \"$TRIPLETIME_TOKEN\" ] && source '${CLAUDE_PLUGIN_DATA}/.env' 2>/dev/null; printf '{\"Authorization\":\"Bearer %s\"}' \"$TRIPLETIME_TOKEN\""
     }
   }
 }
