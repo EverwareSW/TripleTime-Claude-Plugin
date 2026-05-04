@@ -1,14 +1,13 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "tripletime",
   "owner": {
-    "name": "Ken van der Eerden"
+    "name": "Everware - Ken van der Eerden"
   },
   "plugins": [
     {
       "name": "tripletime",
-      "source": "./",
       "description": "Control TripleTime time tracking from Claude Code.",
+      "source": "./",
       "category": "productivity",
       "tags": ["time-tracking", "mcp", "tripletime"]
     }
