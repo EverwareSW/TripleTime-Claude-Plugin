@@ -28,8 +28,7 @@ Steps:
    - The authenticated user's name and email (from the response's `user` object).
    - Where the .env file was created or updated.
    - The token, show first 10 chars masked.
-   - Tell them to restart Claude Code so the MCP server picks up the env var.
-   - Tell the user they can also set the variable in their shell environment — shell would take precedence. E.g. add in `~/.zshrc` (remind them to source their profile (e.g. `source ~/.zshrc`) if they set set the token manually, so the env var would become available):
+   - Tell the user they can also set the variable in their shell environment — shell would take precedence. E.g. add in `~/.zshrc` (remind them to source their profile (e.g. `source ~/.zshrc`) and restart claude if they set set the token manually, so the env var would become available):
      ```
      export TRIPLETIME_TOKEN="<the token>"
      ```
@@ -39,8 +38,7 @@ Steps:
 1. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL`.
 2. Call `curl -sS -X POST <base>/api/auth/logout -H "Authorization: Bearer $TRIPLETIME_TOKEN" -H 'Accept: application/json' -H "User-Agent: Claude-Code"` to revoke the token server-side.
 3. Remove the `TRIPLETIME_TOKEN` from the `{CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env) file.
-4. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile if they set the token manually.
-5. Tell the user to restart Claude Code.
+4. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile and restart claude if they set the token manually.
 
 ### `whoami`
 Call MCP tool `who-am-i-tool`. Print the user's name, email, ignored_log_descriptions and any relevant metadata returned.
