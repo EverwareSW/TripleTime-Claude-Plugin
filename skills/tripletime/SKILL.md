@@ -11,31 +11,37 @@ You are operating the user's TripleTime time tracker. The MCP server `tripletime
 ## Subcommands
 
 ### `login [email]`
-Mint a Sanctum bearer token. Steps:
+Mint a Sanctum bearer token.
+Writes `TRIPLETIME_TOKEN=...` to `${CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env). You can also write that file by hand, or set the variable in your shell environment — shell takes precedence.
+Steps:
 1. Get the machine name: run `scutil --get ComputerName` on macOS, or `hostname` as fallback. Trim the result.
 2. Build `device_name = "Claude Code (<machine name>)"` (e.g. `Claude Code (Ken's Laptop)`).
 3. Ask the user for their TripleTime password (do not echo it back).
 4. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL` if the user has it set in their shell.
-5. POST to `<base>/api/auth/login` as JSON. Use Bash `curl -sS -X POST <base>/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"email":"...","password":"...","device_name":"..."}'`.
-6. Parse the `token` field from the JSON response.
+5. POST to `<base>/api/auth/login` as JSON. Use Bash `curl -sS -X POST <base>/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"email":"...","password":"...","device_name":"..."} -H "User-Agent: Claude-Code"'`.
+6. Parse the `token` field from the JSON response and save it:
+   - `mkdir -p "${CLAUDE_PLUGIN_DATA}"`.
+   - Read existing `${CLAUDE_PLUGIN_DATA}/.env` if present; update/add `TRIPLETIME_TOKEN=...`, preserve other keys. Write back, no quotes around the value. Do **not** save the token anywhere else!
+   - `chmod 600 "${CLAUDE_PLUGIN_DATA}/.env"` — the token is a credential.
+   - Confirm, then show the status so the user sees where they stand.
 7. Print to the user:
    - The authenticated user's name and email (from the response's `user` object).
-   - This line they need to add to their shell profile (e.g. `~/.zshrc`):
+   - Where the .env file was created or updated.
+   - The token, show first 10 chars masked.
+   - Tell them to restart Claude Code so the MCP server picks up the env var.
+   - Tell the user they can also set the variable in their shell environment — shell would take precedence. E.g. add in `~/.zshrc` (remind them to source their profile (e.g. `source ~/.zshrc`) if they set set the token manually, so the env var would become available):
      ```
      export TRIPLETIME_TOKEN="<the token>"
      ```
-   - Tell them to source their profile (e.g. `source ~/.zshrc`) so the env var is available.
-   - Tell them to restart Claude Code so the MCP server picks up the env var.
-8. Do **not** save the token to any file — only print it for the user to handle.
-9. If the response is a 2FA challenge instead of a token, tell the user 2FA-protected accounts are not supported in this version and they should mint a token via the web UI.
-
-### `whoami`
-Call MCP tool `who-am-i-tool`. Print the user's name, email, ignored_log_descriptions and any relevant metadata returned.
+8. If the response is a 2FA challenge instead of a token, tell the user 2FA-protected accounts are not supported in this version and they should mint a token via the web UI.
 
 ### `logout`
 1. Resolve the API base URL: default `https://api.tripletime.app`, or use `$TRIPLETIME_URL`.
 2. Call `curl -sS -X POST <base>/api/auth/logout -H 'Accept: application/json' -H 'Authorization: Bearer $TRIPLETIME_TOKEN'` to revoke the token server-side.
 3. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile and restart Claude Code.
+
+### `whoami`
+Call MCP tool `who-am-i-tool`. Print the user's name, email, ignored_log_descriptions and any relevant metadata returned.
 
 ### `list [from] [until]`
 Call MCP tool `list-days-tool` with optional `from` and `until` (YYYY-MM-DD), don't fill if not explicitly passed, defaults to this week. 

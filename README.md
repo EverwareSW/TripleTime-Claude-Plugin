@@ -33,13 +33,13 @@ The MCP server authenticates with a Sanctum bearer token issued by the TripleTim
 
 1. Open Claude Code anywhere and run:
    ```
-   /tripletime login your@email
+   /plugin marketplace add EverwareSW/TripleTime-Claude-Plugin
+   /plugin install tripletime@tripletime
+   /reload-plugins
+   /tripletime login
    ```
-2. Type your password when prompted. Claude reads your machine device name and uses `Claude Code (<device name>)` as the device_name on the token, so you can later identify and revoke it from the web UI.
-3. Claude prints the line to add to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
-   ```sh
-   export TRIPLETIME_TOKEN="..."
-   ```
+2. Type your email and password when prompted. Claude reads your machine device name and uses `Claude Code (<device name>)` as the device_name on the token, so you can later identify and revoke it from the web UI.
+3. Claude adds the token to `~/.claude/plugins/data/tripletime-tripletime/.env`.
 4. Restart Claude Code so the MCP server picks up the env var.
 5. Run `/mcp` — `tripletime` should be listed as connected.
 
@@ -57,6 +57,7 @@ The MCP server authenticates with a Sanctum bearer token issued by the TripleTim
 | `/tripletime start [description]`                   | Start a new log. AI synthesizes description if absent.                                     |
 | `/tripletime end [HH:MM]`                           | Add a log to the current log group, without a description, with the given or current time. |
 | `/tripletime track [description]`                   | Track current session by creating a log and adding end log when work is done.              |
+| `/tripletime end-track`                             | Stop tracking.                                                                             |
 | `/tripletime create-log [field=value]`              | Create a log.                                                                              |
 | `/tripletime update-log <id> [field=value]`         | Update a log.                                                                              |
 | `/tripletime delete-log <id>`                       | Delete a log.                                                                              |
