@@ -3,7 +3,7 @@ name: 'tripletime'
 description: Control TripleTime time tracking. Subcommands - login, logout, whoami, list, create-group, update-group, delete-group, start, end, track, create-log, update-log, delete-log, open
 argument-hint: <subcommand> [args...]
 disable-model-invocation: true
-allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *) Bash(date *) mcp__plugin_tripletime_tripletime__*
+allowed-tools: Bash(curl *) Bash(scutil *) Bash(hostname) Bash(open *) Bash(date *) mcp__tripletime__*
 ---
 
 You are operating the user's TripleTime time tracker. The MCP server `tripletime` exposes tools that map to each subcommand below. The user's input is `$ARGUMENTS` — parse the first whitespace-delimited token as the subcommand.
