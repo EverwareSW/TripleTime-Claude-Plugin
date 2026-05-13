@@ -12,7 +12,7 @@ You are operating the user's TripleTime time tracker. The MCP server `tripletime
 
 ### `login [email]`
 Mint a Sanctum bearer token.
-Writes `TRIPLETIME_TOKEN=...` to `${CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env). You can also write that file by hand, or set the variable in your shell environment — shell takes precedence.
+Writes `TRIPLETIME_TOKEN="..."` to `${CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env). You can also write that file by hand, or set the variable in your shell environment — shell takes precedence.
 Steps:
 1. Get the machine name: run `scutil --get ComputerName` on macOS, or `hostname` as fallback. Trim the result.
 2. Build `device_name = "Claude Code (<machine name>)"` (e.g. `Claude Code (Ken's Laptop)`).
@@ -25,7 +25,7 @@ Steps:
    ```
 6. Parse the `auth_token` field from the JSON response (shape: `{"auth_token":"..."}`) and save it:
    - `mkdir -p "${CLAUDE_PLUGIN_DATA}"`.
-   - Read existing `${CLAUDE_PLUGIN_DATA}/.env` if present; update/add `TRIPLETIME_TOKEN=...`, preserve other keys. Write back, no quotes around the value. Do **not** save the token anywhere else!
+   - Read existing `${CLAUDE_PLUGIN_DATA}/.env` if present; update/add `TRIPLETIME_TOKEN="..."`, preserve other keys. Write back with **double quotes** around the value (tokens contain `|` which breaks shell sourcing without quotes). Do **not** save the token anywhere else!
    - `chmod 600 "${CLAUDE_PLUGIN_DATA}/.env"` — the token is a credential.
    - Confirm, then show the status so the user sees where they stand.
 7. Print to the user:
