@@ -56,6 +56,7 @@ Call MCP tool `upsert-log-group-tool` **without** an `id` (creates a new group).
 
 ### `update-group <id> [name] [date]`
 Call MCP tool `upsert-log-group-tool` **with** the `id`. Pass any provided `name` or `date`.
+Pass (current) `name`, even when only updating other field(s) — omitting `name` clears it.
 
 ### `delete-group <id>`
 Call MCP tool `delete-log-group-tool`. Also deletes all logs within the group! Confirm with the user before deleting unless they said "force" or "yes".
@@ -81,7 +82,12 @@ Track the current task continuously — creating a start log now and maintaining
 The task stays active until the user explicitly stops tracking.
 
 1. Call `list-days-tool` to identify a suitable group and make sure there are no existing logs whos times could conflict (create a group if needed). Remember the group ID — you will need it every response. The end log ID is not yet known; it is captured after step 4.
-2. Create a work log via `upsert-log-tool` with `start` = when the task began (infer from session context if possible) and the given or synthesized description. Then go to step 4 (no end log exists yet, skip step 3 this first time).
+2. **Infer the session start time** — you MUST attempt this before falling back to now. Check in order:
+   - Timestamps in MCP tool responses already seen this session (e.g. `created_at` on a log group or log)
+   - File modification times of files edited this session: `stat -f "%Sm" -t "%H:%M" <file>`
+   - Any explicit time the user mentioned in conversation
+   - Only if none of the above apply: use current time
+   Then create a work log via `upsert-log-tool` with that inferred `start` and the given or synthesized description. Then go to step 4 (no end log exists yet, skip step 3 this first time).
 3. As your **first tool call** of every response (from the second response onwards), run `date +%H:%M` and check the gap since the end log's current `start`. If the end log ID is unknown (e.g. after session compaction), call `list-days-tool` first to re-identify it (last log with no description in the tracked group).
    - **Gap ≤ 5 min:** do nothing yet, print nothing. Go to step 4.
    - **Gap > 5 min:** leave the existing end log as-is, create a new work log with `start` = now (rounded to nearest 5 min) at index = end log's index + 2 — leaving end log's index + 1 empty, which acts as the implicit break slot. Step 4 must now create a new end log, leaving the old end log. Go to step 4.
@@ -98,6 +104,7 @@ Call MCP tool `upsert-log-tool` **without** an `id`. Accepted fields: `log_group
 
 ### `update-log <id> [field=value ...]`
 Call MCP tool `upsert-log-tool` **with** the `id`. Pass any provided fields: `log_group_id`, `description`, `start`, `index`.
+Pass (current) `start` and `description`, even when only updating other field(s) — omitting those fields clears them.
 
 ### `delete-log <id>`
 Call MCP tool `delete-log-tool`. Confirm with the user before deleting unless they said "force" or "yes".
