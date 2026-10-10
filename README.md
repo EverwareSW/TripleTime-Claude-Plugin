@@ -2,6 +2,8 @@
 
 Control [TripleTime](https://tripletime.app) time tracking from Claude Code via slash commands and an MCP server.
 
+New to TripleTime? [View the FAQ](https://tripletime.io/about/). For more info or alternative agents, see [TripleTime AI & MCP](https://tripletime.io/ai-mcp/).
+
 ## What you get
 
 - `/tripletime <subcommand>`: list days, create, update or delete logs, create and update groups.
