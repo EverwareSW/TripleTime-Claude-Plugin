@@ -32,7 +32,7 @@ Steps:
    - The authenticated user's name and email (from the response's `user` object).
    - Where the .env file was created or updated.
    - The token, show first 10 chars masked.
-   - Tell the user they can also set the variable in their shell environment — shell would take precedence. E.g. add in `~/.zshrc` (remind them to source their profile (e.g. `source ~/.zshrc`) and restart claude if they set set the token manually, so the env var would become available):
+   - Tell the user they can also set the variable in their shell environment — shell would take precedence. E.g. add in `~/.zshrc` (remind them to source their profile (e.g. `source ~/.zshrc`) and restart claude if they set the token manually, so the env var would become available):
      ```
      export TRIPLETIME_TOKEN="<the token>"
      ```
@@ -40,8 +40,14 @@ Steps:
 
 ### `logout`
 1. Set `TRIPLETIME_URL="${TRIPLETIME_URL:-https://api.tripletime.app}"`. Never hardcode the URL.
-2. Call `curl -sS -X POST "$TRIPLETIME_URL/api/auth/logout" -H "Authorization: Bearer $TRIPLETIME_TOKEN" -H 'Accept: application/json' -H "User-Agent: Claude-Code"` to revoke the token server-side.
-3. Remove the `TRIPLETIME_TOKEN` from the `{CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env) file.
+2. Revoke the token server-side. Load the token from the `.env` file first when it isn't set in the shell — `login` only writes it there:
+   ```bash
+   TRIPLETIME_URL="${TRIPLETIME_URL:-https://api.tripletime.app}"
+   [ -z "$TRIPLETIME_TOKEN" ] && source "${CLAUDE_PLUGIN_DATA:-$HOME/.claude/plugins/data/tripletime-tripletime}/.env" 2>/dev/null
+   curl -sS -X POST "$TRIPLETIME_URL/api/auth/logout" -H "Authorization: Bearer $TRIPLETIME_TOKEN" -H 'Accept: application/json' -H "User-Agent: Claude-Code"
+   ```
+   If this returns 401, tell the user the token could not be revoked and to revoke it in the web app's Settings page.
+3. Remove the `TRIPLETIME_TOKEN` from the `${CLAUDE_PLUGIN_DATA}/.env` (~/.claude/plugins/data/tripletime-tripletime/.env) file.
 4. Tell the user to remove `TRIPLETIME_TOKEN` from their shell profile and restart claude if they set the token manually.
 
 ### `whoami`
