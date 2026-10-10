@@ -40,7 +40,7 @@ Follow these steps to install:
 
 | Command                                             | Action                                                                                     |
 |-----------------------------------------------------|--------------------------------------------------------------------------------------------|
-| `/tripletime login [email]`                         | Mint a Sanctum bearer via `POST /login`. Prints env-var lines.                             |
+| `/tripletime login [email]`                         | Mint a Sanctum bearer via `POST /api/auth/login` and save it to the plugin's `.env` file.  |
 | `/tripletime logout`                                | Remove `TRIPLETIME_TOKEN` and restart Claude Code.                                         |
 | `/tripletime whoami`                                | Get current user information.                                                              |
 | `/tripletime list [from] [until]`                   | Summarize log groups + logs in a date range.                                               |
@@ -65,9 +65,9 @@ A TripleTime Log has no `end_time`. The next log's `start` *is* the previous log
 
 ## Caveats
 
-- 2FA-protected accounts can't mint a token via this plugin yet. Use the TripleTime web UI to mint a token manually and set `TRIPLETIME_TOKEN`.
-- The token has no expiry by default. Revoke it from the web UI's account settings when no longer needed.
-- This plugin only ships Claude Code support. Other MCP-aware clients (Cursor, ChatGPT, Claude Desktop) can connect to the same MCP URL — see the API repo for raw config snippets.
+- 2FA-protected accounts can't mint a token via this plugin yet. Create a token on the Settings page of the TripleTime web app and set `TRIPLETIME_TOKEN`.
+- The token has no expiry by default. Revoke it from the Settings page of the TripleTime web app when no longer needed.
+- This plugin only ships Claude Code support. Other MCP-aware clients (Cursor, ChatGPT, Claude Desktop) can connect to the same MCP URL — see [TripleTime AI & MCP](https://tripletime.io/ai-mcp/) for setup instructions.
 
 ## Token security
 
